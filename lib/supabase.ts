@@ -14,6 +14,20 @@ if (!supabaseKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseKey)
 
+// News article type
+export interface NewsArticle {
+  id: string
+  headline: string
+  summary: string
+  content?: string
+  source: string
+  category: string
+  published_date: string
+  status: string
+  created_at?: string
+  updated_at?: string
+}
+
 // Helper function to query Supabase
 export async function querySupabase(table: string, options: any = {}) {
   let query = supabase.from(table).select(options.select || '*')

@@ -1,7 +1,7 @@
-import { querySupabase } from '@/lib/supabase'
+import { querySupabase, NewsArticle } from '@/lib/supabase'
 import Link from 'next/link'
 
-async function getNews() {
+async function getNews(): Promise<NewsArticle[]> {
   const { data, error } = await querySupabase('news_items', {
     select: '*',
     eq: { column: 'status', value: 'Approved' },
@@ -14,7 +14,7 @@ async function getNews() {
     return []
   }
   
-  return data || []
+  return (data as NewsArticle[]) || []
 }
 
 async function getWeather() {
@@ -101,7 +101,7 @@ export default async function HomePage() {
               <div className="mt-8">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Latest News</h2>
                 <div className="space-y-4">
-                  {latestNews.map((article: any) => (
+                  {latestNews.map((article) => (
                     <article key={article.id} className="bg-white rounded-lg shadow-sm p-4">
                       <div className="flex items-start space-x-4">
                         <div className="w-24 h-24 bg-gray-200 rounded-lg flex-shrink-0">

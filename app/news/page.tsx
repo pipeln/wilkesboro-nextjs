@@ -1,7 +1,7 @@
-import { querySupabase } from '@/lib/supabase'
+import { querySupabase, NewsArticle } from '@/lib/supabase'
 import Link from 'next/link'
 
-async function getAllNews() {
+async function getAllNews(): Promise<NewsArticle[]> {
   const { data, error } = await querySupabase('news_items', {
     select: '*',
     eq: { column: 'status', value: 'Approved' },
@@ -13,7 +13,7 @@ async function getAllNews() {
     return []
   }
   
-  return data || []
+  return (data as NewsArticle[]) || []
 }
 
 export default async function NewsPage() {
@@ -53,7 +53,7 @@ export default async function NewsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {news.map((article: any) => (
+            {news.map((article) => (
               <article key={article.id} className="bg-white rounded-xl shadow-sm overflow-hidden">
                 <div className="aspect-video bg-gray-200">
                   <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
