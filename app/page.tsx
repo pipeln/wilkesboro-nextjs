@@ -33,8 +33,8 @@ async function getWeather() {
 export default async function HomePage() {
   const [news, weather] = await Promise.all([getNews(), getWeather()])
   
-  const featuredArticle = news[0]
-  const latestNews = news.slice(1, 4)
+  const featuredArticle: NewsArticle | undefined = news[0]
+  const latestNews: NewsArticle[] = news.slice(1, 4)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -101,7 +101,7 @@ export default async function HomePage() {
               <div className="mt-8">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Latest News</h2>
                 <div className="space-y-4">
-                  {latestNews.map((article) => (
+                  {latestNews.map((article: NewsArticle) => (
                     <article key={article.id} className="bg-white rounded-lg shadow-sm p-4">
                       <div className="flex items-start space-x-4">
                         <div className="w-24 h-24 bg-gray-200 rounded-lg flex-shrink-0">
