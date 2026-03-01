@@ -1,13 +1,13 @@
-import { supabase } from '@/lib/supabase'
+import { querySupabase } from '@/lib/supabase'
 import Link from 'next/link'
 
 async function getNews() {
-  const { data, error } = await supabase
-    .from('news_items')
-    .select('*')
-    .eq('status', 'Approved')
-    .order('published_date', { ascending: false })
-    .limit(6)
+  const { data, error } = await querySupabase('news_items', {
+    select: '*',
+    eq: { column: 'status', value: 'Approved' },
+    order: { column: 'published_date', ascending: false },
+    limit: 6
+  })
   
   if (error) {
     console.error('Error fetching news:', error)
@@ -18,11 +18,10 @@ async function getNews() {
 }
 
 async function getWeather() {
-  // Fetch from Open-Meteo API (free, no key needed)
   try {
     const res = await fetch(
       'https://api.open-meteo.com/v1/forecast?latitude=36.1585&longitude=-81.1526&current=temperature_2m,relative_humidity_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=America/New_York',
-      { next: { revalidate: 3600 } } // Cache for 1 hour
+      { next: { revalidate: 3600 } }
     )
     return res.json()
   } catch (error) {
@@ -93,36 +92,38 @@ export default async function HomePage() {
               </article>
             ) : (
               <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-                <p className="text-gray-500">No featured article available</p>
+                <p className="text-gray-500">No featured article available. Check back soon!</p>
               </div>
             )}
             
             {/* Latest News */}
-            <div className="mt-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Latest News</h2>
-              <div className="space-y-4">
-                {latestNews.map((article: any) => (
-                  <article key={article.id} className="bg-white rounded-lg shadow-sm p-4">
-                    <div className="flex items-start space-x-4">
-                      <div className="w-24 h-24 bg-gray-200 rounded-lg flex-shrink-0">
-                        <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400 rounded-lg">
+            {latestNews.length > 0 && (
+              <div className="mt-8">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Latest News</h2>
+                <div className="space-y-4">
+                  {latestNews.map((article: any) => (
+                    <article key={article.id} className="bg-white rounded-lg shadow-sm p-4">
+                      <div className="flex items-start space-x-4">
+                        <div className="w-24 h-24 bg-gray-200 rounded-lg flex-shrink-0">
+                          <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400 rounded-lg">
                           </div>
-                      </div>
-                      <div className="flex-1">
-                        <span className="text-xs font-semibold text-blue-600">{article.category}</span>
-                        <h3 className="font-semibold text-gray-900 mt-1">{article.headline}</h3>
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">{article.summary}</p>
-                        <div className="flex items-center text-xs text-gray-500 mt-2">
-                          <span>{article.source}</span>
-                          <span className="mx-2">•</span>
-                          <span>{article.published_date}</span>
+                        </div>
+                        <div className="flex-1">
+                          <span className="text-xs font-semibold text-blue-600">{article.category}</span>
+                          <h3 className="font-semibold text-gray-900 mt-1">{article.headline}</h3>
+                          <p className="text-sm text-gray-600 mt-1 line-clamp-2">{article.summary}</p>
+                          <div className="flex items-center text-xs text-gray-500 mt-2">
+                            <span>{article.source}</span>
+                            <span className="mx-2">•</span>
+                            <span>{article.published_date}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </article>
-                ))}
+                    </article>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
           
           {/* Sidebar */}

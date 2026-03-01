@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { querySupabase } from '@/lib/supabase'
 
 export async function GET() {
   try {
-    const { data, error } = await supabase
-      .from('news_items')
-      .select('*')
-      .eq('status', 'Approved')
-      .order('published_date', { ascending: false })
-      .limit(10)
+    const { data, error } = await querySupabase('news_items', {
+      select: '*',
+      eq: { column: 'status', value: 'Approved' },
+      order: { column: 'published_date', ascending: false },
+      limit: 10
+    })
     
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
@@ -16,6 +16,7 @@ export async function GET() {
     
     return NextResponse.json({ news: data })
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch news' }, { status: 500 })
+    console.error('News API error:', error)
+    return NextResponse.json({ news: [] }, { status: 200 })
   }
 }
