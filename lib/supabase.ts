@@ -1,20 +1,21 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-// Create client only if credentials are available
-export const supabase = supabaseUrl && supabaseKey 
-  ? createClient(supabaseUrl, supabaseKey)
-  : null
+// Validate env vars at build time
+if (!supabaseUrl) {
+  throw new Error('NEXT_PUBLIC_SUPABASE_URL is required. Please set it in your environment variables.')
+}
 
-// Helper function to safely query Supabase
+if (!supabaseKey) {
+  throw new Error('NEXT_PUBLIC_SUPABASE_ANON_KEY is required. Please set it in your environment variables.')
+}
+
+export const supabase = createClient(supabaseUrl, supabaseKey)
+
+// Helper function to query Supabase
 export async function querySupabase(table: string, options: any = {}) {
-  if (!supabase) {
-    console.warn('Supabase not configured')
-    return { data: [], error: null }
-  }
-  
   let query = supabase.from(table).select(options.select || '*')
   
   if (options.eq) {
