@@ -1,0 +1,16 @@
+/node_modules
+/.next
+/dist
+/out
+
+# Environment variables
+.env.local
+.env
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
